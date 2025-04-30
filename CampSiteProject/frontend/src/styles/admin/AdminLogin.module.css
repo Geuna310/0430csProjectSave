@@ -1,0 +1,63 @@
+
+/* 어두운 배경과 전체 화면을 덮는 오버레이 */
+.overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;  /* 화면 전체 높이 */
+  background-color: rgba(0, 0, 0, 0.7); /* 어두운 배경 (불투명도 조절 가능) */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999; /* 로그인 화면이 다른 화면보다 위에 보이게 설정 */
+}
+
+
+/* 로그인 창 */
+.loginBox {
+  background-color: #fff; /* 하얀 배경 */
+  padding: 2rem;
+  width: 300px; /* 로그인 창 너비 */
+  border-radius: 8px; /* 모서리 둥글게 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 */
+  text-align: center; /* 텍스트 가운데 정렬 */
+}
+
+
+/* 로그인 제목 */
+.loginBox h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+
+/* 로그인 입력창 */
+.loginBox input {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+
+/* 로그인 버튼 */
+.loginBox button {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  background-color: #4CAF50; /* 로그인 버튼 배경 */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+
+.loginBox button:hover {
+  background-color: #45a049; /* 버튼 호버 시 색상 */
+}
