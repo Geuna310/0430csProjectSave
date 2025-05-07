@@ -1,0 +1,173 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "a";
+  src: url("a.ttf");
+}
+
+.body {
+  max-width: 100%;
+  margin: 0 auto;
+  overflow-x: auto; 
+  color: black;
+  font-size: 14px;
+}
+
+.supplierTable {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 40px 60px 165px 80px 125px 125px 217px 370px 78px 60px 190px 170px 170px;
+  align-items: center;
+  min-width: 1850px;
+  width: fit-content;
+}
+
+.header:hover {
+  cursor: pointer;
+}
+
+.header {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.cell {
+  display: flex;
+  justify-content: space-between; /* 왼쪽-오른쪽 정렬 */
+  align-items: center;
+  padding: 10px;
+  height: 100%; /* row가 늘어나면 같이 늘어남 */
+  border: 1px solid black;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+.cell input{
+	width: 100%;
+	height: 100%;
+}
+
+.cell * {
+  height: 70%;
+  display: flex;
+  align-items: center;
+  
+}
+
+
+.active {
+  background-color: gray;
+  font-weight: bold;
+}
+
+.TableMenuT {
+  font-size: 12px;
+  margin-left: 6px; /* 필요 시 여백 */
+}
+
+.reciveButton {
+	width: 100%;
+	height: 80%;
+	background-color: darkgray;
+	border-radius: 5px;
+	display: flex;               
+	justify-content: center;     
+	align-items: center;   
+}
+
+.reciveButton:hover{
+	background-color: gray;
+}
+
+
+
+.menuButton {
+	white-space: nowrap;
+	display: flex;
+	margin: 10px 0;
+	justify-content: space-between;
+}
+
+.menuButton *{
+	width: 80px;
+	height: 40px;
+	background-color: darkgray;
+	border-radius: 5px;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 16px;    
+	text-decoration: none;   /* 링크 밑줄 제거 */
+	color: black;   
+}
+
+.menuButton *:hover{
+	background-color: gray;
+}
+
+.cell input {
+  width: 100%;
+  height: 100%;
+  padding: 8px 10px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.cell input:focus {
+  border-color: #666;
+  background-color: #f5f5f5;
+}
+
+
+.selectedRow {
+  background-color: gray; /* 선택된 행의 배경색 */
+}
+
+
+/* 기존 커스텀 체크박스 스타일은 그대로 유지 */
+.checkCell {
+  cursor: pointer;
+  justify-content: center;
+}
+
+.hiddenCheckbox {
+  display: none;
+}
+
+.customCheckbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #999;
+  border-radius: 4px;
+  background-color: white;
+  position: relative;
+}
+
+.hiddenCheckbox:checked + .customCheckbox {
+  background-color: gray;
+  border-color: black;
+}
+
+.hiddenCheckbox:checked + .customCheckbox::after {
+  content: '✔';
+  position: absolute;
+  top: 0px;
+  left: 4px;
+  font-size: 14px;
+  color: white;
+}
+
+
+

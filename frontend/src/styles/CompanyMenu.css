@@ -1,0 +1,61 @@
+.company-menu-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 300px;
+}
+
+.camping-hover-area {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  position: relative;
+}
+
+.camping-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: black;
+  margin-right: 10px;
+  transition: transform 1s ease;
+}
+
+.camping-submenu {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.word-link {
+  display: inline-flex;
+  text-decoration: none;
+  color: #61dafb;
+  font-weight: 500;
+}
+
+.letter {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.camping-hover-area:hover .camping-title {
+  transform: translateX(-100px);
+}
+
+.camping-hover-area:hover .camping-submenu {
+  pointer-events: auto;
+}
+
+.camping-hover-area:hover .camping-submenu .letter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.spacer {
+  margin: 0 5px;
+}
+
+.bracket {
+  color: #999;
+}

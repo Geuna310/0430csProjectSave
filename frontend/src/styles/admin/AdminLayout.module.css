@@ -1,0 +1,139 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "a";
+  src: url("a.ttf");
+}
+
+.layoutReset {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "a";
+  background-color: LightGray;
+  color: black;
+  height: 100vh;      /* 부모의 높이를 화면 전체로 설정 */
+  display: flex;
+  flex-direction: column; /* 👈 세로 배치 */
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Title 영역 */
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  position: relative;
+  border-bottom: 2px solid gray;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.titleInput {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40%;
+  display: flex;
+  align-items: center;
+}
+
+.searchInput {
+  outline: none;
+  width: 100%;
+  padding: 6px 10px;
+  color: black;
+  background-color: white;
+  border: 2px solid #333;
+  border-radius: 5px;
+  font-family: "a";
+}
+
+.searchIconDiv {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.login {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  padding: 5px 10px;
+  border: 1px solid gray;
+  background-color: white;
+  color: gray;
+  white-space: nowrap;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Footer 영역 */
+.footer {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  width: 95%;              /* 화면 너비의 90%만 차지 */
+  height: 85%;             /* 화면 높이의 85%만 차지 */
+  margin: 0 auto;          /* 가운데 정렬 (수평) */
+  overflow: hidden;        /* 내부 스크롤만 가능하도록 */
+}
+
+.footerLeft {
+  font-size: 18px;
+  position: relative;
+  width: 12%;
+  padding-right: 20px;
+  border: gray solid 2px;
+  background-color: white;
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.productMenu {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.productItem {
+  position: relative;
+  padding-left: 8%;
+  cursor: pointer;
+  display: block;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.footerRight {
+  width: 88%;
+  padding-left: 20px;
+  border-top: gray solid 2px;
+  border-right: gray solid 2px;
+  border-bottom: gray solid 2px;
+  background-color: white;
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+
+
