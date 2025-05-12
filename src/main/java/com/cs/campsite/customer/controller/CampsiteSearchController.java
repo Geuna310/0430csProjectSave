@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cs.campsite.customer.dto.CampsiteSearchCondition;
 import com.cs.campsite.customer.dto.CampsiteSimpleDTO;
+import com.cs.campsite.customer.entity.CampsiteSortType;
 import com.cs.campsite.customer.service.CampsiteSearchService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,11 @@ public class CampsiteSearchController {
 			@RequestParam(name="categoryNames", required = false) List<String> category,
 			@RequestParam(name="sectionTypeNames", required = false) List<String> sectionType,
 			@RequestParam(name="facilityCategoryNames", required = false) List<String> facilityCategory,
+			@RequestParam(name="minPrice", required = false) Integer minPrice,
+			@RequestParam(name="maxPrice", required = false) Integer maxPrice,
+			@RequestParam(name="minPeakPrice", required = false) Integer minPeakPrice,
+			@RequestParam(name="maxPeakPrice", required = false) Integer maxPeakPrice,
+			@RequestParam(name="sort", required = false, defaultValue = "createdAt") CampsiteSortType sort,
 			@PageableDefault(size = 10, sort = "campsiteCreatedAt", 
 			direction = Sort.Direction.DESC) Pageable pageable) {
 		CampsiteSearchCondition csc = new CampsiteSearchCondition();
@@ -48,6 +54,11 @@ public class CampsiteSearchController {
 		csc.setCategoryNames(category);
 		csc.setSectionTypeNames(sectionType);
 		csc.setFacilityCategoryNames(facilityCategory);
+		csc.setMinPrice(minPrice);
+		csc.setMaxPrice(maxPrice);
+		csc.setMinPeakPrice(minPeakPrice);
+		csc.setMaxPeakPrice(maxPeakPrice);
+		csc.setSort(sort);
 		
 		return camSearchService.searchCampsites(csc, pageable);
 	}

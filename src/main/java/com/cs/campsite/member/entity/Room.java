@@ -34,11 +34,11 @@ public class Room {
 	
 	@Setter
 	@Column(nullable = false)
-	private int roomPrice;
+	private Integer roomPrice;
 	
 	@Setter
 	@Column(nullable = false)
-	private int roomPeakPrice;
+	private Integer roomPeakPrice;
 	
 	@Setter
 	@Column(nullable = false)

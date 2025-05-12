@@ -9,11 +9,12 @@ import org.springframework.stereotype.Component;
 
 import com.cs.campsite.customer.dto.CampsiteSearchCondition;
 import com.cs.campsite.customer.dto.CampsiteSimpleDTO;
+import com.cs.campsite.customer.entity.CampsiteSortType;
 import com.cs.campsite.customer.entity.QCampsiteCategories;
 import com.cs.campsite.customer.entity.QCampsiteFacility;
 import com.cs.campsite.customer.entity.QCampsiteSectionTypes;
 import com.cs.campsite.customer.entity.QFacility;
-import com.cs.campsite.member.entity.Campsite;
+import com.cs.campsite.customer.entity.QReview;
 import com.cs.campsite.member.entity.QCampsite;
 import com.cs.campsite.member.entity.QCategory;
 import com.cs.campsite.member.entity.QRoom;
@@ -21,6 +22,13 @@ import com.cs.campsite.member.entity.QSection;
 import com.cs.campsite.member.entity.QSectionTypes;
 import com.cs.campsite.customer.repository.CampsiteRepositoryCustom;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.SubQueryExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -34,7 +42,8 @@ public class CampsiteRepositoryImpl implements CampsiteRepositoryCustom {
 
     @Override
     public Page<CampsiteSimpleDTO> searchCampsite(CampsiteSearchCondition csc, Pageable pageable) {
-        QCampsite campsite = QCampsite.campsite;
+        
+    	QCampsite campsite = QCampsite.campsite;
         QRoom room = QRoom.room;
         QFacility facility = QFacility.facility;
         QCampsiteFacility campsiteFacility = QCampsiteFacility.campsiteFacility;
@@ -43,27 +52,61 @@ public class CampsiteRepositoryImpl implements CampsiteRepositoryCustom {
         QSection section = QSection.section;
         QSectionTypes sectionTypes = QSectionTypes.sectionTypes;
         QCampsiteSectionTypes campsiteSectionTypes = QCampsiteSectionTypes.campsiteSectionTypes;
+        QReview review = QReview.review;
 
+        /** 서브쿼리 */
+        // TODO : 서브쿼리는 속도를 저하시킬 가능성 높아 추후 보완 필요할 수도 
+        QReview reviewSub = new QReview("reviewSub"); // 별명
+        
+        SubQueryExpression<Long> reviewCountSubQuery = JPAExpressions
+        		.select(reviewSub.count())
+        		.from(reviewSub)
+        		.where(reviewSub.campsite.eq(campsite));
+        
+        SubQueryExpression<Double> avgRatingSubQuery = JPAExpressions
+        		.select(reviewSub.reviewRating.avg())
+        		.from(reviewSub)
+        		.where(reviewSub.campsite.eq(campsite));
+  
+        
         BooleanBuilder where = new BooleanBuilder();
+        
 
-        // 이름 조건
+        /** 이름 조건 */
         if (csc.getName() != null && !csc.getName().isBlank()) {
             where.and(campsite.campsiteName.contains(csc.getName()));
         }
 
-        // 최소 인원 수용 조건
+        /** 인원 수용 조건 */
         if (csc.getMinCapacity() != null) {
             where.and(room.roomCapacity.goe(csc.getMinCapacity()));
         }
 
-        // 캠핑장 수량 조건
+        /** 방 수량 조건 */
 //        where.and(room.roomQuantity.gt(0));
+        
+        /** 가격 조건 (성수기, 비성수기 통합) */
+        // TODO : 회의로 어떤 방식을 적용할지 정해야...
+//        NumberExpression<Integer> effectivePrice = room.roomPrice.min()
+//        	    .coalesce(0)
+//        	    .min(room.roomPeakPrice.min().coalesce(0));
+        
+        NumberExpression<Long> reviewCountExpr = Expressions.numberTemplate(Long.class, "({0})", reviewCountSubQuery);
+        NumberExpression<Double> avgRatingExpr = Expressions.numberTemplate(Double.class, "({0})", avgRatingSubQuery);
 
-        // 기본 쿼리
-        JPQLQuery<Campsite> baseQuery = queryFactory
-            .select(campsite).distinct()
+        /** 기본 쿼리 */ 
+        JPQLQuery<Tuple> baseQuery = queryFactory
+            .selectDistinct(
+            		campsite.campsiteNo,
+            		campsite.campsiteName,
+            		campsite.campsiteLocation,
+            		campsite.campsiteImageUrl,
+            		reviewCountExpr,
+            		avgRatingExpr
+            		)
             .from(room)
             .join(room.campsite, campsite)
+            .leftJoin(campsite.reviews, review)
             .leftJoin(campsiteCategories).on(campsiteCategories.campsiteNo.eq(campsite))
             .leftJoin(campsiteCategories.categoryNo, category)
             .leftJoin(room.section, section)
@@ -71,29 +114,44 @@ public class CampsiteRepositoryImpl implements CampsiteRepositoryCustom {
             .leftJoin(campsiteSectionTypes.sectionTypeNo, sectionTypes)
             .leftJoin(campsite.facilities, campsiteFacility)
             .leftJoin(campsiteFacility.facility, facility)
-            .where(where);
+            .where(where)
+            .groupBy(campsite.campsiteNo);
 
-        // 카테고리 필터 적용
+        /** 카테고리 필터 적용 */
         baseQuery = applyMultiCategoryFilters(baseQuery, csc, category, sectionTypes, facility);
 
+        /** 정렬 조건 */
+        if (csc.getSort() == CampsiteSortType.REVIEW_COUNT) {
+            OrderSpecifier<?> orderByReviewCount = Expressions.numberTemplate(Long.class, "({0})", reviewCountSubQuery).desc();
+            baseQuery = baseQuery.orderBy(orderByReviewCount);
+        } else if (csc.getSort() == CampsiteSortType.RATING_AVG) {
+            OrderSpecifier<?> orderByAvgRating = Expressions.numberTemplate(Double.class, "({0})", avgRatingSubQuery).desc();
+            baseQuery = baseQuery.orderBy(orderByAvgRating);
+        } else {
+            baseQuery = baseQuery.orderBy(campsite.campsiteCreatedAt.desc());
+        }
+        
         List<CampsiteSimpleDTO> content = baseQuery
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch()
             .stream()
-            .map(c -> new CampsiteSimpleDTO(
-                c.getCampsiteNo(),
-                c.getCampsiteName(),
-                c.getCampsiteLocation(),
-                c.getCampsiteImageUrl()
+            .map(tuple -> new CampsiteSimpleDTO(
+            	tuple.get(campsite.campsiteNo),
+                tuple.get(campsite.campsiteName),
+                tuple.get(campsite.campsiteLocation),
+                tuple.get(campsite.campsiteImageUrl),
+                tuple.get(reviewCountExpr),
+                tuple.get(avgRatingExpr)
             ))
             .toList();
 
-        // total count 쿼리
+        /** total count 쿼리 */
         JPQLQuery<Long> countQuery = queryFactory
             .select(campsite.countDistinct())
             .from(room)
             .join(room.campsite, campsite)
+            .leftJoin(campsite.reviews, review)
             .leftJoin(campsiteCategories).on(campsiteCategories.campsiteNo.eq(campsite))
             .leftJoin(campsiteCategories.categoryNo, category)
             .leftJoin(room.section, section)
@@ -105,13 +163,14 @@ public class CampsiteRepositoryImpl implements CampsiteRepositoryCustom {
 
         countQuery = applyMultiCategoryFilters(countQuery, csc, category, sectionTypes, facility);
 
-        long total = countQuery.fetch().size();
+        Long total = countQuery.fetchOne();
+        return new PageImpl<CampsiteSimpleDTO>(content, pageable, total != null ? total : 0L);
 
-        return new PageImpl<>(content, pageable, total);
     }
     
 
-    // 다중선택 필터 적용 메소드
+    /** 다중선택 필터 적용 메소드 */
+    // TODO : 가격관련 완성한 뒤 여기도 수정해야 
     private <T extends JPQLQuery<?>> T applyMultiCategoryFilters(
     	    T query,
     	    CampsiteSearchCondition csc,
@@ -140,7 +199,7 @@ public class CampsiteRepositoryImpl implements CampsiteRepositoryCustom {
 
     	    if (categoryFilter.hasValue()) {
     	        query.where(categoryFilter);
-    	        query.groupBy(QCampsite.campsite.campsiteNo);
+    	     //   query.groupBy(QCampsite.campsite.campsiteNo);
 
     	        BooleanBuilder having = new BooleanBuilder();
     	        if (selectedCategoryNames != null && !selectedCategoryNames.isEmpty()) {
@@ -153,9 +212,9 @@ public class CampsiteRepositoryImpl implements CampsiteRepositoryCustom {
     	        	having.and(facility.facilityName.countDistinct().eq((long) selectedFacilityNames.size()));
     	        }
 
-    	        query.having(having);
+    	    //    query.having(having);
     	    }
-
+    	    
     	    return query;
     	}
 

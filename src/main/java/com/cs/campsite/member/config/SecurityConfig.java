@@ -35,6 +35,7 @@ public class SecurityConfig {
                    // "/api/**",               // react 연결을 위해 permitAll 처리
                     "/static/**",
                     "/images/**",
+                    "/api/campsite/search",
                     "/api/campsite/search/**",
                     "/api/customer/campsites/**",
                     "/api/customer/reviews/**"

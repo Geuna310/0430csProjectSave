@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import com.cs.campsite.customer.entity.CampsiteFacility;
+import com.cs.campsite.customer.entity.Review;
 import com.cs.campsite.customer.entity.ViewCategory;
 
 import jakarta.persistence.CascadeType;
@@ -65,6 +66,9 @@ public class Campsite {
     @OneToMany(mappedBy = "campsite", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CampsiteFacility> facilities;
     
+    @OneToMany(mappedBy = "campsite")
+    private List<Review> reviews;
+    
     @ManyToMany
     @JoinTable(
         name = "campsite_categories",
@@ -72,6 +76,7 @@ public class Campsite {
         inverseJoinColumns = @JoinColumn(name = "category_no")
     )
     private List<ViewCategory> categories;
+    
     
 }
 

@@ -1,8 +1,21 @@
 package com.cs.campsite.customer.dto;
 
-public record CampsiteSimpleDTO(
-	int campsiteNo,
-	String campsiteName,
-	String campsiteLocation,
-	String campsiteImgUrl
-) {}
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class CampsiteSimpleDTO {
+	private Integer campsiteNo;
+    private String campsiteName;
+    private String campsiteLocation;
+    private String campsiteImageUrl;
+    private Long reviewCount;         
+    private Double averageRating;    
+
+
+}

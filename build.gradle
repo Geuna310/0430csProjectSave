@@ -16,8 +16,6 @@ java {
 def querydslDir = "$buildDir/generated/querydsl"
 
 // Q타입 생성
-
-
 sourceSets {
 	main {
 		java {
